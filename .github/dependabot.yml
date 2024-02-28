@@ -9,11 +9,25 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    milestone: 7
+    labels:
+      - "cargo"
+      - "dependencies"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    milestone: 7
+    labels:
+      - "github-actions"
+      - "dependencies"
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    milestone: 7
+    labels:
+      - "npm"
+      - "dependencies"
