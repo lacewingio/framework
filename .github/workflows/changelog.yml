@@ -32,7 +32,7 @@ jobs:
 
   build_release:
     name: Attach builds
-    needs: setup_release_build
+    needs: update_release_draft
     if: github.event_name == 'push'
     strategy:
       fail-fast: false
