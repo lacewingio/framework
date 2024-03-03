@@ -18,7 +18,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.schema_migrations (
-                                          version character varying(255) NOT NULL
+    version character varying(128) NOT NULL
 );
 
 
@@ -27,15 +27,57 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.sessions (
-                                 id integer NOT NULL,
-                                 session_verifier character varying NOT NULL,
-                                 user_id integer NOT NULL,
-                                 otp_code_encrypted character varying NOT NULL,
-                                 otp_code_attempts integer DEFAULT 0 NOT NULL,
-                                 otp_code_confirmed boolean DEFAULT false NOT NULL,
-                                 otp_code_sent boolean DEFAULT false NOT NULL,
-                                 created_at timestamp without time zone DEFAULT now() NOT NULL
+    id integer NOT NULL,
+    session_verifier character varying NOT NULL,
+    user_id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    otp_code_encrypted character varying NOT NULL,
+    otp_code_attempts integer DEFAULT 0 NOT NULL,
+    otp_code_confirmed boolean DEFAULT false NOT NULL,
+    otp_code_sent boolean DEFAULT false NOT NULL
 );
+
+
+--
+-- Name: TABLE sessions; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.sessions IS 'The users login sessions';
+
+
+--
+-- Name: COLUMN sessions.session_verifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.sessions.session_verifier IS ' The session is a 32 byte random number stored in their cookie. This is the sha256 hash of that value.';
+
+
+--
+-- Name: COLUMN sessions.otp_code_encrypted; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.sessions.otp_code_encrypted IS 'A 6 digit code that is encrypted here to prevent attackers with read access to the database being able to use it.';
+
+
+--
+-- Name: COLUMN sessions.otp_code_attempts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.sessions.otp_code_attempts IS 'We count OTP attempts to prevent brute forcing.';
+
+
+--
+-- Name: COLUMN sessions.otp_code_confirmed; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.sessions.otp_code_confirmed IS 'Once the user enters the correct value this gets set to true.';
+
+
+--
+-- Name: COLUMN sessions.otp_code_sent; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.sessions.otp_code_sent IS 'Have we sent the OTP code?';
 
 
 --
@@ -63,13 +105,14 @@ ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 --
 
 CREATE TABLE public.users (
-                              id integer NOT NULL,
-                              email character varying NOT NULL,
-                              hashed_password character varying NOT NULL,
-                              reset_password_selector character varying,
-                              reset_password_verifier_hash character varying,
-                              created_at timestamp without time zone DEFAULT now() NOT NULL,
-                              updated_at timestamp without time zone DEFAULT now() NOT NULL
+    id integer NOT NULL,
+    email character varying NOT NULL,
+    hashed_password character varying NOT NULL,
+    reset_password_selector character varying,
+    reset_password_sent_at timestamp without time zone,
+    reset_password_validator_hash character varying,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -149,4 +192,5 @@ ALTER TABLE ONLY public.users
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20220330110026');
+    ('20220330110026'),
+    ('20240227175328');

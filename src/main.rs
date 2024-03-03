@@ -1,12 +1,14 @@
 mod auth;
 mod config;
 mod error;
+mod cornucopia;
 
 use axum::body::{self, Empty, Body};
 use axum::extract::{Extension, Path};
 use axum::http::{Response, StatusCode, header, HeaderValue};
 use axum::response::IntoResponse;
 use axum::{response::Html, routing::get, Router};
+
 use cornucopia::queries::users;
 use deadpool_postgres::Pool;
 use std::net::SocketAddr;
@@ -27,7 +29,7 @@ async fn main() {
 
     // run it
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
-    println!("listening on {}", addr);
+    println!("listening on http://{}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
@@ -67,8 +69,3 @@ async fn handler(Extension(pool): Extension<Pool>) -> Result<Html<String>, error
 }
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));
-
-// Include the generated source code
-pub mod cornucopia {
-    include!(concat!(env!("OUT_DIR"), "/cornucopia.rs"));
-}
