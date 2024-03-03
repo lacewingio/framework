@@ -69,7 +69,7 @@ jobs:
 
       - id: postgres-migration
         name: Migrate Postgres DB
-        uses: ./.github/database_migration
+        uses: ./.github/actions/database_migration
         with:
           database_url: ${{ env.DATABASE_URL }}
 #      - name: Get the release version from the tag
