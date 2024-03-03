@@ -25,7 +25,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.release_drafter.outputs.upload_url }}
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         id: release_drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

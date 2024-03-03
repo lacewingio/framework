@@ -18,7 +18,7 @@ fn main() -> Result<(), std::io::Error> {
 
 fn cornucopia() -> Result<(), std::io::Error> {
     // For the sake of simplicity, this example uses the defaults.
-    let queries_path = "db/queries";
+    let queries_path = Path::new("db/queries").canonicalize().unwrap();
 
     // Again, for simplicity, we generate the module in our project, but
     // we could've also generated it elsewhere if we wanted to.
@@ -26,12 +26,13 @@ fn cornucopia() -> Result<(), std::io::Error> {
     // and include the generated file with a `include_str` statement in your project.
 
     let out_dir = env::var_os("OUT_DIR").unwrap();
-    let file_path = Path::new(&out_dir).join("cornucopia.rs");
+    let file_path = Path::new(&out_dir).join("cornucopia.rs").canonicalize().unwrap();
 
     let db_url = env::var_os("DATABASE_URL").unwrap();
 
     // Rerun this build script if the queries or migrations change.
-    println!("cargo:rerun-if-changed={queries_path}");
+    let queries_path_str = queries_path.to_str().unwrap();
+    println!("cargo:rerun-if-changed={queries_path_str}");
 
     // Call cornucopia. Use whatever CLI command you need.
     let output = std::process::Command::new("cornucopia")
