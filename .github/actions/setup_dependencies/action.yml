@@ -5,6 +5,12 @@ inputs:
   os:
     description: "Runner operating system"
     required: true
+  rust:
+    description: "Rust release channel"
+    required: true
+  targets:
+    description: "Cargo build target"
+    required: true
 
 runs:
   using: "composite"
@@ -18,8 +24,8 @@ runs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: ${{ matrix.rust }}
-        targets: ${{ matrix.target }}
+        toolchain: ${{ inputs.rust }}
+        targets: ${{ inputs.target }}
     - uses: actions/setup-node@v4
       with:
         node-version: 20

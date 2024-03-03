@@ -74,6 +74,8 @@ jobs:
         uses: ./.github/actions/setup_dependencies
         with:
           os: ${{ matrix.os }}
+          target: ${{ matrix.target }}
+          rust: ${{ matrix.rust }}
       - name: Migrate Postgres DB
         uses: ./.github/actions/database_migration
         with:

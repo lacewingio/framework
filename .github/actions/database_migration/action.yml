@@ -12,7 +12,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install golang-migrate
+    - name: Install dbmate
       run: npm install -g dbmate
       shell: bash
 
