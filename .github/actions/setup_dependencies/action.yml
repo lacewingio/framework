@@ -1,0 +1,26 @@
+name: "Setup dependencies"
+description: "Sets up build dependencies for Lacewing"
+
+inputs:
+  os:
+    description: "Runner operating system"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install packages (Ubuntu)
+      if: inputs.os == 'ubuntu-20.04'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends xz-utils liblz4-tool libssl-dev tree
+      shell: bash
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ matrix.rust }}
+        targets: ${{ matrix.target }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'

@@ -2,38 +2,21 @@ name: "Build Lacewing"
 description: "Builds the Lacewing application"
 
 inputs:
-  database_url:
-    description: "Connection string for the database. 
-    Follows the format: postgres:
-    //[user[:password]@][host][:port][/dbname][?options]"
+  target:
+    description: "Cargo build target"
     required: true
-    default: "postgres://root:password@localhost:5432/test?sslmode=disable"
-  migration_files_source:
-    description: "Path or URL to migration files. Can be local, a GitHub 
-    repo using 'github://<owner>/<repo>?dir=<directory>', or other 
-    formats supported by golang-migrate."
-    required: true
-    default: "file://db/migrations"
 
 runs:
   using: "composite"
   steps:
-    - name: Install golang-migrate
-      run: npm install -g dbmate
+    - name: Install NPM dependencies
+      run: npm ci
       shell: bash
 
-    - name: Run database migrations
-      run: dbmate up
+    - name: Build static dependencies and components
+      run: npm run release
       shell: bash
 
-    - name: Report migration status
-      id: database-migration-report
-      run: if [ $? -eq 0 ]; then echo "report=Migrated database \
-      successfully" >> $GITHUB_OUTPUT; else echo "report=Failed to \
-      migrate database" >> $GITHUB_OUTPUT; fi
+    - name: Build release binary
+      run: cargo build --target ${{ inputs.target }} --verbose --release
       shell: bash
-
-outputs:
-  migration_report:
-    description: "Reports the status of the database migration"
-    value: $
