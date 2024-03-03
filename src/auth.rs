@@ -19,7 +19,7 @@ impl<B> FromRequestParts<B> for AuthenticatedUser
 {
     type Rejection = Response;
 
-    async fn from_request_parts(parts: &mut Parts, state: &B) -> Result<Self, Self::Rejection>  {
+    async fn from_request_parts(parts: &mut Parts, _state: &B) -> Result<Self, Self::Rejection>  {
         if let Some(user_id) = parts.headers.get("x-user-id") {
             if let Ok(user_id) = user_id.to_str() {
                 if let Ok(user_id) = user_id.parse::<u32>() {

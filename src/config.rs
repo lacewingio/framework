@@ -1,10 +1,7 @@
 use std::env;
-use std::sync::Arc;
 use std::str::FromStr;
 
 pub use deadpool_postgres::{Pool};
-use rustls::client::danger::{ServerCertVerified, ServerCertVerifier, HandshakeSignatureValid};
-use rustls_pki_types::{ServerName, CertificateDer, UnixTime};
 #[derive(Clone, Debug)]
 pub struct Config {
     pub database_url: String,
@@ -46,7 +43,6 @@ impl SmtpConfig {
 }
 
 impl Config {
-    // Initialise form oiur environment
     pub fn new() -> Config {
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
 
@@ -58,57 +54,7 @@ impl Config {
 
     pub fn create_pool(&self) -> Pool {
         let config = tokio_postgres::Config::from_str(&self.database_url).unwrap();
-
-        let manager = if config.get_ssl_mode() != tokio_postgres::config::SslMode::Disable {
-            let tls_config = rustls::ClientConfig::builder()
-                .dangerous()
-                .with_custom_certificate_verifier(Arc::new(DummyTlsVerifier))
-                .with_no_client_auth();
-
-            let tls = tokio_postgres_rustls::MakeRustlsConnect::new(tls_config);
-            deadpool_postgres::Manager::new(config, tls)
-        } else {
-            deadpool_postgres::Manager::new(config, tokio_postgres::NoTls)
-        };
-
+        let manager = deadpool_postgres::Manager::new(config, tokio_postgres::NoTls);
         Pool::builder(manager).build().unwrap()
-    }
-}
-
-#[derive(Debug)]
-struct DummyTlsVerifier;
-
-impl ServerCertVerifier for DummyTlsVerifier {
-    fn verify_server_cert(
-        &self,
-        _end_entity: &CertificateDer,
-        _intermediates: &[CertificateDer],
-        _server_name: &ServerName,
-        _ocsp_response: &[u8],
-        _now: UnixTime,
-    ) -> Result<ServerCertVerified, rustls::Error> {
-        Ok(ServerCertVerified::assertion())
-    }
-
-    fn verify_tls12_signature(
-        &self,
-        _message: &[u8],
-        _cert: &CertificateDer,
-        _dss: &rustls::DigitallySignedStruct,
-    ) -> Result<HandshakeSignatureValid, rustls::Error> {
-        Ok(HandshakeSignatureValid::assertion())
-    }
-
-    fn verify_tls13_signature(
-        &self,
-        _message: &[u8],
-        _cert: &CertificateDer,
-        _dss: &rustls::DigitallySignedStruct,
-    ) -> Result<HandshakeSignatureValid, rustls::Error> {
-        Ok(HandshakeSignatureValid::assertion())
-    }
-
-    fn supported_verify_schemes(&self) -> Vec<rustls::SignatureScheme> {
-        Vec::new()
     }
 }
