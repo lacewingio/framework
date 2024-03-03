@@ -21,15 +21,3 @@ runs:
         DATABASE_URL: ${{ inputs.database_url }}
       run: dbmate up
       shell: bash
-
-    - name: Report migration status
-      env:
-        DATABASE_URL: ${{ inputs.database_url }}
-      id: database-migration-report
-      run: echo "migration_report=$(dbmate status)" >> $GITHUB_OUTPUT
-      shell: bash
-
-outputs:
-  migration_report:
-    description: "Reports the status of the database migration"
-    value: $
