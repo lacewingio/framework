@@ -100,6 +100,7 @@ jobs:
       - run: npm ci
       - run: npm run release
       - run: tree
+      - run: pwd
       - name: Build release binary
         run: cargo build --target ${{ matrix.target }} --verbose --release
       - name: Build archive
